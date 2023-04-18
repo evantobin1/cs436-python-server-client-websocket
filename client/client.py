@@ -28,7 +28,8 @@ def server_listen(server_socket):
         
         if("USER_JOINED_FLAG" in msg):
             username = msg["PAYLOAD"]["username"]
-            print(f"[SERVER]: User {username} has joined the chatroom.")
+            time = msg["PAYLOAD"]["time"]
+            print(f"[{time}] Server: {username} has joined the chatroom.")
             continue
 
         # If the server has send an attachment
@@ -108,7 +109,7 @@ if __name__ == "__main__":
     # set the current working directory to the directory of the file
     os.chdir(dir_path)
 
-    host_name = "144.37.145.3"
+    host_name = "192.168.0.118"
     port = 18000
 
     # Creates the TCP socket

@@ -107,14 +107,14 @@ def clientWatch(cs, client_address):
                 output_payload = {"JOIN_REJECT_FLAG": 1, "PAYLOAD": "The server rejects the join request. The chatroom has reached its maximum capacity."}
                 print(f"- Sending {output_payload}")
                 cs.send(json.dumps(output_payload).encode())
-                continue
+                return
             for user in active_users:
                 if(user["username"] == username):
-                    print("Error, too many clients")
+                    print("Error, name already taken.")
                     output_payload = {"JOIN_REJECT_FLAG": 1, "PAYLOAD": f"The server rejects the join request. The name {username} has already been taken"}
                     print(f"- Sending {output_payload}")
                     cs.send(json.dumps(output_payload).encode())
-                    continue
+                    return
 
             # Successful connection
             print("Client joining chatroom")
@@ -124,10 +124,12 @@ def clientWatch(cs, client_address):
 
             # Tell all other clients that the new user has joined
             for user in active_users:
-                user["socket"].send(json.dumps({"USER_JOINED_FLAG": 1, "PAYLOAD": {"username": msg["USERNAME"]}}).encode())
+                user["socket"].send(json.dumps({"USER_JOINED_FLAG": 1, "PAYLOAD": {"username": msg["USERNAME"], "time": datetime.now().strftime('%H:%M:%S')}}).encode())
+
             
             # Add the new user to the list of active users
             active_users.append({"username": msg["USERNAME"], "socket": cs, "ip": client_address[0], "port": client_address[1] })
+            message_history.append({"username": "Server", "content": f"{username} has joined the chatroom.", "time": datetime.now().strftime('%H:%M:%S')})
             continue
 
         # Listening for messages
